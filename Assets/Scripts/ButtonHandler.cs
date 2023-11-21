@@ -7,7 +7,7 @@ public class ButtonHandler : MonoBehaviour
 {
     public enum SceneToLoad
     {
-        StartMenue, Game,
+        StartMenue, Game, IntroCutScene,
        
         // Add more scenes here if needed
     }
