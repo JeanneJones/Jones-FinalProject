@@ -1160,13 +1160,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6a6df342b52d24092cf6bbb590c535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveHeight: 0.5
-  waveFrequency: 0.5
-  waveLength: 0.75
-  waveOriginPosition: {x: 0, y: 0, z: 0}
-  meshFilter: {fileID: 0}
-  mesh: {fileID: 0}
-  vertices: []
 --- !u!1001 &925732897962769804
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1198,7 +1191,7 @@ PrefabInstance:
     - target: {fileID: 925732896748232989, guid: 0c5e89c39c6793b43a5c688d85f9d997,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.274
+      value: 0.18
       objectReference: {fileID: 0}
     - target: {fileID: 925732896748232989, guid: 0c5e89c39c6793b43a5c688d85f9d997,
         type: 3}
