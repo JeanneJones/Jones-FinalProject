@@ -12,13 +12,16 @@ public class AnimatedCharacterMovement : MonoBehaviour
     public float moveSpeed = 5f;
 
     [Header("Jump")]
-    public float jumpForce = 10f;
-    public float maxJumpHeight = 2f; // Adjust this value for your desired jump height.
+    public float jumpForce = 20f;
+    public float maxJumpHeight = 11f; // Adjust this value for your desired jump height.
 
     [Header("Ground Check")]
     public Transform groundCheck;
     public float groundCheckRadius = 0.1f;
     public LayerMask groundLayer;
+
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -46,16 +49,12 @@ public class AnimatedCharacterMovement : MonoBehaviour
         newVelocity.x = horizontalInput * moveSpeed;
         rb.velocity = newVelocity;
 
-        //right movement
         if (horizontalInput > 0f)
         {
             // Right movement
             anim.SetTrigger("Right");
             transform.localScale = new Vector3(1, 1, 1); // Flip sprite to face right
         }
-        
-        
-
 
         else if (horizontalInput < 0f)
         {
