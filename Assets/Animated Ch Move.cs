@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class AnimatedCharacterMovement : MonoBehaviour
 {
+    private string previousState;
+
     Rigidbody2D rb;
     Animator anim;
     private bool isGrounded = true;
+    private Transform originalParent;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -20,17 +23,16 @@ public class AnimatedCharacterMovement : MonoBehaviour
     public float groundCheckRadius = 0.1f;
     public LayerMask groundLayer;
 
-    private Transform originalParent;  // To store the original parent of the player
+    private bool isOnMovingPlatform = false;
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        originalParent = transform.parent;  // Store the original parent
+        originalParent = transform.parent;
     }
 
-    // Update is called once per frame
     void Update()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
@@ -56,18 +58,57 @@ public class AnimatedCharacterMovement : MonoBehaviour
         }
         else
         {
-            anim.SetTrigger("Idle");
+            // Check if the player has stopped moving horizontally and was previously walking right
+            if (Mathf.Approximately(rb.velocity.x, 0f) && previousState == "Right")
+            {
+                anim.SetTrigger("Idle Right");
+            }
+            else
+            {
+                anim.SetTrigger("Idle");
+            }
         }
 
-        if (Input.GetKeyDown("space") && isGrounded)
+        // Handle jumping
+        if (Input.GetKeyDown("space"))
         {
-            anim.SetTrigger("Jump");
-            float actualJumpForce = Mathf.Sqrt(2f * jumpForce * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
-            rb.velocity = new Vector2(rb.velocity.x, actualJumpForce);
+            if (isGrounded)
+            {
+                anim.SetTrigger("Jump");
 
-            // Unparent the player when they jump
-            transform.parent = originalParent;
+                // Calculate jump force considering the moving platform's velocity
+                float actualJumpForce = Mathf.Sqrt(2f * jumpForce * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
+                rb.velocity = new Vector2(rb.velocity.x, actualJumpForce);
+            }
+            else if (isOnMovingPlatform)
+            {
+                // Jump when on a moving platform
+                transform.parent = null;
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                isOnMovingPlatform = false;
+            }
         }
+
+        // Update the previous state
+        UpdatePreviousState();
+    }
+
+    // Method to update the previous animation state
+    void UpdatePreviousState()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Right"))
+        {
+            previousState = "Right";
+        }
+        else if (anim.GetCurrentAnimatorStateInfo(0).IsName("Left"))
+        {
+            previousState = "Left";
+        }
+        else if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            previousState = "Idle";
+        }
+        // Add more conditions as needed for other animation states
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -75,15 +116,12 @@ public class AnimatedCharacterMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            // Reassign the original parent when landing on the ground
-            transform.parent = originalParent;
         }
 
-        // Check if colliding with a moving platform
         if (collision.gameObject.CompareTag("MovingPlatform"))
         {
-            // Parent the player to the moving platform
             transform.parent = collision.transform;
+            isOnMovingPlatform = true;
         }
     }
 
@@ -94,10 +132,10 @@ public class AnimatedCharacterMovement : MonoBehaviour
             isGrounded = false;
         }
 
-        // Unparent the player if they leave the moving platform
         if (collision.gameObject.CompareTag("MovingPlatform"))
         {
             transform.parent = originalParent;
+            isOnMovingPlatform = false;
         }
     }
 }
