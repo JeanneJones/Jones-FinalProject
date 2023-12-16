@@ -6,6 +6,8 @@ public class AnimatedCharacterMovement : MonoBehaviour
 {
     private string previousState;
 
+
+
     Rigidbody2D rb;
     Animator anim;
     private bool isGrounded = true;
